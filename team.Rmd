@@ -1,0 +1,81 @@
+---
+title: "team"
+author: "Xinyi Zhu, Han Sun"
+date: "3/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(ggplot2)
+library(classdata)
+library(dplyr)
+library(readxl)
+# import defense sheet
+defense <- read_excel('/Users/jessie/Desktop/ds202/cyclonesFootball2019.xlsx', sheet='Defensive')
+str(defense)
+# import offense sheet
+offense <- read_excel('/Users/jessie/Desktop/ds202/cyclonesFootball2019.xlsx', sheet='Offensive')
+str(offense)
+# import biography sheet
+biography <- read_excel('/Users/jessie/Desktop/ds202/cyclonesFootball2019.xlsx', sheet='Biography')
+str(biography)
+```
+
+```{r}
+defClean <- defense %>%
+  mutate(Tackles_Solo = as.numeric(Tackles_Solo),
+         Tackles_ASST = as.numeric(Tackles_ASST),
+         Tackles_TFL = as.numeric(Tackles_TFL),
+         Tackles_Sack = as.numeric(Tackles_Sack),
+         Turnover_FF = as.numeric(Turnover_FF),
+         Turnover_FR = as.numeric(Turnover_FR),
+         Turnover_INT = as.numeric(Turnover_INT),
+         Pass_QBH = as.numeric(Pass_QBH),
+         Pass_PB = as.numeric(Pass_PB))
+str(defClean)
+
+defClean$Name <- factor(defClean$Name)
+defClean$Opponent_Opponent <- factor(defClean$Opponent_Opponent)
+str(defClean)
+```
+
+```{r}
+offense$Name <- factor(offense$Name)
+offense$Opponent_Opponent <- factor(offense$Opponent_Opponent)
+names(offense)[9] <- "Passing_CMP_ATT"
+offClean <- offense %>%
+  mutate(Rushing_ATT = as.numeric(Rushing_ATT),
+         Rushing_YDS = as.numeric(Rushing_YDS),
+         Rushing_TD = as.numeric(Rushing_TD),
+         Receiving_REC = as.numeric(Receiving_REC),
+         Receiving_YDS = as.numeric(Receiving_YDS),
+         Receiving_TD = as.numeric(Receiving_TD),
+         Passing_CMP_ATT = as.numeric(Passing_CMP_ATT),
+         Passing_YDS = as.numeric(Passing_YDS),
+         Passing_TD = as.numeric(Passing_TD),
+         Passing_INT = as.numeric(Passing_INT))
+names(offense)[9] <- "Passing_CMP_ATT"
+str(offClean)
+```
+
+```{r}
+bioClean <- biography %>%
+  mutate(Weight = as.numeric(Weight))
+str(bioClean)
+
+bioClean$Height <- as.numeric(sub("-","", bioClean$Height))
+str(bioClean)
+```
+
+```{r}
+defClean
+offClean
+bioClean
+```
+
