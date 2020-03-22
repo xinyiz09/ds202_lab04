@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Part 1 Cleaning Data Frame
+Part 1 Cleaning Data Frame
 
 ```{r}
 library(ggplot2)
@@ -28,7 +28,7 @@ biography <- read_excel('/Users/jessie/Desktop/ds202/cyclonesFootball2019.xlsx',
 str(biography)
 ```
 
-# The player names and opponent names are factors.
+The player names and opponent names are factors.
 
 ```{r}
 defense$Name <- factor(defense$Name)
@@ -40,7 +40,7 @@ offense$Opponent_Opponent <- factor(offense$Opponent_Opponent)
 str(offense)
 ```
 
-# All offensive and defensive statistics are numerical. The Weight column in biogrpahy is also numeric.
+All offensive and defensive statistics are numerical. The Weight column in biogrpahy is also numeric.
 
 ```{r}
 
@@ -80,14 +80,18 @@ str(bioClean)
 
 ```
 
-# Change the Height column in biogrpahy into numeric. 
+Change the Height column in biogrpahy into numeric. 
 
 ```{r}
-bioClean$Height <- as.numeric(sub("-","", bioClean$Height))
-str(bioClean)
+bioClean<-biography %>% separate(Height, into = c("feet", "inch"))
+bioClean <- bioClean %>%
+  mutate(feet = as.numeric(feet),
+         inch = as.numeric(inch))
+bioClean$Height <- bioClean$feet+bioClean$inch/12
+bioClean
 ```
 
-# By cleaning the three data frames in R, at the end of this step you should have the following three clean data frames: defClean, offClean, and bioClean. Print the structures of these data frames.
+By cleaning the three data frames in R, at the end of this step you should have the following three clean data frames: defClean, offClean, and bioClean. Print the structures of these data frames.
 
 ```{r}
 defClean
@@ -95,15 +99,31 @@ offClean
 bioClean
 ```
  
-# Part two: Tidying 
+Part two: Tidying 
 
-# Reformat the defClean data frame into a tidy format using pivot_longer. The type of statistic (Tackles_Solo, Tackles_ASST, etc) is added as a new key column named Statistic.
+Reformat the defClean data frame into a tidy format using pivot_longer. The type of statistic (Tackles_Solo, Tackles_ASST, etc) is added as a new key column named Statistic.
 
 ```{r}
 defClean1 <- defClean %>% pivot_longer(3:11, names_to = 'Statistic', values_to = 'score')
 head(defClean1)
 ```
 
+Part three: Joining data frames
+
+1. Find where do the offensive players come from by joining the offensive data and player biography data appropriately.
+
+```{r}
+full<- full_join(offClean, bioClean, by = "Name")
+full
+```
 
 
+2. Is there a relationship between the weight of a player and the receiving yards (Receiving_YDS)?
+
+```{r}
+ggplot(data = full, aes(x = Weight, y = Receiving_YDS)) +
+  geom_boxplot() + 
+  coord_flip()
+```
  
+ The histogram shows right skewed with 2 outliers. It seems that the person with lower weight will have larger possible to have higher receiving yards.
