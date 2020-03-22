@@ -120,10 +120,9 @@ full
 
 2. Is there a relationship between the weight of a player and the receiving yards (Receiving_YDS)?
 
-```{r}
-ggplot(data = full, aes(x = Weight, y = Receiving_YDS)) +
-  geom_boxplot() + 
-  coord_flip()
+```{r,fig.width=18, fig.height=20}
+ggplot(data =full, aes(x = Weight, y = Receiving_YDS)) +
+  geom_point()
 ```
  
- The histogram shows right skewed with 2 outliers. It seems that the person with lower weight will have larger possible to have higher receiving yards.
+The histogram does not show obvious relationship between weight and Receiving_YDS. However, But in weight 183, it's more evenly distributed in Receiving_YDS.
