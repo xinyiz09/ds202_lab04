@@ -9,12 +9,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Part 1 Cleaning Data Frame
 
 ```{r}
 library(ggplot2)
 library(classdata)
 library(dplyr)
+library(tidyr)
 library(readxl)
 # import defense sheet
 defense <- read_excel('/Users/jessie/Desktop/ds202/cyclonesFootball2019.xlsx', sheet='Defensive')
@@ -27,7 +28,22 @@ biography <- read_excel('/Users/jessie/Desktop/ds202/cyclonesFootball2019.xlsx',
 str(biography)
 ```
 
+# The player names and opponent names are factors.
+
 ```{r}
+defense$Name <- factor(defense$Name)
+defense$Opponent_Opponent <- factor(defense$Opponent_Opponent)
+str(defense)
+
+offense$Name <- factor(offense$Name)
+offense$Opponent_Opponent <- factor(offense$Opponent_Opponent)
+str(offense)
+```
+
+# All offensive and defensive statistics are numerical. The Weight column in biogrpahy is also numeric.
+
+```{r}
+
 defClean <- defense %>%
   mutate(Tackles_Solo = as.numeric(Tackles_Solo),
          Tackles_ASST = as.numeric(Tackles_ASST),
@@ -40,12 +56,6 @@ defClean <- defense %>%
          Pass_PB = as.numeric(Pass_PB))
 str(defClean)
 
-defClean$Name <- factor(defClean$Name)
-defClean$Opponent_Opponent <- factor(defClean$Opponent_Opponent)
-str(defClean)
-```
-
-```{r}
 offense$Name <- factor(offense$Name)
 offense$Opponent_Opponent <- factor(offense$Opponent_Opponent)
 names(offense)[9] <- "Passing_CMP_ATT"
@@ -61,21 +71,39 @@ offClean <- offense %>%
          Passing_TD = as.numeric(Passing_TD),
          Passing_INT = as.numeric(Passing_INT))
 names(offense)[9] <- "Passing_CMP_ATT"
+offClean[is.na(offClean)] = 0
 str(offClean)
-```
 
-```{r}
 bioClean <- biography %>%
   mutate(Weight = as.numeric(Weight))
 str(bioClean)
 
+```
+
+# Change the Height column in biogrpahy into numeric. 
+
+```{r}
 bioClean$Height <- as.numeric(sub("-","", bioClean$Height))
 str(bioClean)
 ```
+
+# By cleaning the three data frames in R, at the end of this step you should have the following three clean data frames: defClean, offClean, and bioClean. Print the structures of these data frames.
 
 ```{r}
 defClean
 offClean
 bioClean
 ```
+ 
+# Part two: Tidying 
 
+# Reformat the defClean data frame into a tidy format using pivot_longer. The type of statistic (Tackles_Solo, Tackles_ASST, etc) is added as a new key column named Statistic.
+
+```{r}
+defClean1 <- defClean %>% pivot_longer(3:11, names_to = 'Statistic', values_to = 'score')
+head(defClean1)
+```
+
+
+
+ 
